@@ -1,24 +1,33 @@
 name: "portfolio - website"
+
 on:
   push:
-      branches: [main]
+    branches: [main]
+
 permissions:
-   pages: write
-   id-token: write
+  pages: write
+  id-token: write
 
 jobs:
-    deploy:
-        runs-on: ubuntu-latest
-        steps:
-            - name: "Checkout the code"
-              uses: actions/checkout@v4
-            - name: 'Setup Github Pages'
-              uses: actions/configure-pages@v4
-            - name: 'Upload the static files'
-              uses: actions/upload-pages-artifact@v4
-              with:
-                 path: '.'
-            - name: 'Deploy the github pages'
-              uses: actions/deploy-pages@v4
+  deploy:
+    # This is the missing piece!
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout the code"
+        uses: actions/checkout@v4
 
+      - name: 'Setup Github Pages'
+        uses: actions/configure-pages@v4
 
+      - name: 'Upload the static files'
+        uses: actions/upload-pages-artifact@v3 # Note: v3 is standard for most, v4 works too
+        with:
+          path: '.'
+
+      - name: 'Deploy the github pages'
+        id: deployment
+        uses: actions/deploy-pages@v4
